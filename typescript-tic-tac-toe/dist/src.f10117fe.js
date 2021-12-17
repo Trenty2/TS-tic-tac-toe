@@ -202,8 +202,24 @@ var appElement = document.getElementById("app");
 var boardElement = document.getElementById("board");
 var ROW_COUNT = 3;
 var COL_COUNT = 3;
+var winner = "";
 var boardState = [["", "", ""], ["", "", ""], ["", "", ""]];
 var currentMove = "X";
+var victories = [];
+
+function checkBoard() {
+  var isDraw = true;
+
+  rowLoop: for (var i = 0; i < ROW_COUNT; i++) {
+    for (var j = 0; j < COL_COUNT; j++) {
+      if (boardState[i][j] === "") isDraw = false;
+      break rowLoop;
+    }
+  }
+
+  if (isDraw) return "Draw";
+  return "";
+}
 
 function createCell(row, col) {
   var content = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
@@ -212,6 +228,15 @@ function createCell(row, col) {
   cell.setAttribute("data-col", col.toString());
   cell.setAttribute("data-content", content);
   cell.classList.add("cell");
+  if (winner) return;
+  cell.addEventListener("click", function () {
+    if (boardState[row][col] === "") {
+      boardState[row][col] = currentMove;
+      currentMove = currentMove === "X" ? "O" : "X";
+      winner = checkBoard();
+      renderBoard();
+    }
+  });
   return cell;
 }
 
